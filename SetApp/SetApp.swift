@@ -11,10 +11,10 @@ import GameplayKit
 
 class SetApp {
     //A deck of 81 cards; shuffled into a random sequence
-    lazy var cardDeck = CardDeck(numberOfCards: 81)
+    var cardDeck: CardDeck?
     
     //A board containing 24 positions upon which the game will be played
-    lazy var board = Array(repeating: BoardPosition(), count: 24)
+    var board = [BoardPosition]()
     
     var availableBoardPosition: Int? {
         //An empty (available) Position contains no Card
@@ -46,8 +46,8 @@ class SetApp {
     
     func dealCards(numberOfCards: Int) {
         for _ in 1...numberOfCards {
-            if availableBoardPosition != nil && cardDeck.cards.count != 0 {
-                board[availableBoardPosition!].card = cardDeck.draw()
+            if availableBoardPosition != nil && cardDeck!.cards.count != 0 {
+                board[availableBoardPosition!].card = cardDeck!.draw()
             }
         }
     }

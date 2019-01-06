@@ -34,8 +34,19 @@ class ViewController: UIViewController {
         syncViewUsingModel()
     }
     
-    @IBOutlet var cardButtons: [UIButton]!
+    @IBOutlet weak var newGameButton: UIButton! {
+        didSet {
+            newGameButton.layer.cornerRadius = 8
+        }
+    }
     
+    @IBAction func newGameButton(_ sender: UIButton) {
+        game.newGame()
+        syncViewUsingModel()
+    }
+    
+    @IBOutlet var cardButtons: [UIButton]!
+
     @IBAction func touchCard(_ sender: UIButton) {
         if let position = cardButtons.index(of: sender) {
             game.selectCard(atPosition: position)
@@ -55,14 +66,14 @@ class ViewController: UIViewController {
                 //Sets the Face that will be displayed on the button for the Card at this position
                 cardButtons[atPosition].setAttributedTitle(game.board[atPosition].card!.attributedString, for: UIControl.State.normal)
                 
-                //Add a border to highlight the position if it is selected
-                if game.board[atPosition].isSelected {
-                    cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)
-                    cardButtons[atPosition].layer.borderWidth = 3
-                } else {
-                    cardButtons[atPosition].layer.borderColor = view.backgroundColor!.cgColor
-                    cardButtons[atPosition].layer.borderWidth = 3
+                //Adjust the border to highlight the position if needed
+                switch game.board[atPosition].state {
+                case .unselected: cardButtons[atPosition].layer.borderColor = view.backgroundColor!.cgColor
+                case .selected: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)
+                case .success: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 0, green: 0.9768045545, blue: 0, alpha: 1)
+                case .failure: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1)
                 }
+                cardButtons[atPosition].layer.borderWidth = 3
                 cardButtons[atPosition].isHidden = false
             }
         }

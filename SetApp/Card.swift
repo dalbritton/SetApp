@@ -77,7 +77,7 @@ class Card {
             }
             let attributes: [NSAttributedString.Key : Any] = [
                 .strokeColor : self.color!.uiColor(),
-                .strokeWidth : self.shading!.rawValue == "filled" ? -5 : 5,
+                .strokeWidth : self.shading!.rawValue == "filled" ? -10 : 10,
                 .foregroundColor : self.color!.uiColor().withAlphaComponent(self.shading!.rawValue == "striped" ? 0.15 : 1.0)
             ]
             self.attributedString = NSAttributedString(string:  symbolString, attributes: attributes)

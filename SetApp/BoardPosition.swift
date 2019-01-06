@@ -10,5 +10,9 @@ import Foundation
 
 class BoardPosition {
     var card: Card?
-    var isSelected = false
+    var state = State.unselected
+
+    enum State {
+        case unselected, selected, success, failure
+    }
 }

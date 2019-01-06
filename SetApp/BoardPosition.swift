@@ -10,4 +10,5 @@ import Foundation
 
 struct BoardPosition {
     var card: Card?
+    var isSelected = false
 }

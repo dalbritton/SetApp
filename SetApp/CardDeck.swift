@@ -10,7 +10,7 @@ import Foundation
 import GameplayKit
 
 class CardDeck {
-    private(set) var cards: [Card]
+    var cards: [Card]
     
     init(numberOfCards: Int) {
         cards = Array(repeating: Card(), count: numberOfCards)

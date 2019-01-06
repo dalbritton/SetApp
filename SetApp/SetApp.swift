@@ -42,8 +42,8 @@ class SetApp {
     func dealCards(cardCount: Int) {
         for _ in 1...cardCount {
             if availablePositions.count != 0 && cardDeck.cards.count != 0 {
-                var newPosition = availablePositions[0]
-                newPosition.card = cardDeck.draw()
+                let availablePosition = availablePositions[0]
+                availablePosition.card = cardDeck.draw()
             }
         }
     }

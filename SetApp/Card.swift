@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-struct Card {
+class Card {
     var cardIdentifier: Int?
     var symbol: Symbol
     var pipCount: PipCount

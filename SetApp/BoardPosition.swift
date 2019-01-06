@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct BoardPosition {
+class BoardPosition {
     var card: Card?
     var isSelected = false
 }

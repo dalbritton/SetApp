@@ -15,6 +15,10 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        //Adjust the appearance of some controls before they are drawn
+        for index in 0..<cardButtons.count {
+            cardButtons[index].layer.cornerRadius = 8
+        }
         game.newGame()
         syncViewUsingModel()
     }
@@ -30,13 +34,7 @@ class ViewController: UIViewController {
         syncViewUsingModel()
     }
     
-    @IBOutlet var cardButtons: [UIButton]! {
-        didSet {
-            for index in 0..<cardButtons.count {
-                cardButtons[index].layer.cornerRadius = 8
-            }
-        }
-    }
+    @IBOutlet var cardButtons: [UIButton]!
     
     @IBAction func touchCard(_ sender: UIButton) {
         if let position = cardButtons.index(of: sender) {

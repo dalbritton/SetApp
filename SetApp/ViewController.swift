@@ -30,7 +30,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func dealButton(_ sender: UIButton) {
-        game.dealCards(cardCount: 3)
+        game.dealCards(numberOfCards: 3)
         syncViewUsingModel()
     }
     
@@ -47,25 +47,22 @@ class ViewController: UIViewController {
         //Show the cards that need to be shown, hiding all others
         for atPosition in 0..<24 {
             if game.board[atPosition].card == nil {
+                //No card to show
                 cardButtons[atPosition].isHidden = true
             } else {
-                var aCard = game.board[atPosition].card!
-                //Build the NSAttributedString describing the Card's visual appearance
-                if aCard.attributedString == nil {
-                    //TODO: do this more efficiently
-                    var symbolString = ""
-                    for _ in 1...aCard.pipCount.rawValue {
-                        symbolString += aCard.symbol.rawValue
-                    }
-                    let attributes: [NSAttributedString.Key : Any] = [
-                        .strokeColor : aCard.color.uiColor(),
-                        .strokeWidth : aCard.shading.rawValue == "filled" ? -5 : 5,
-                        .foregroundColor : aCard.color.uiColor().withAlphaComponent(aCard.shading.rawValue == "striped" ? 0.15 : 1.0)
-                    ]
-                    aCard.attributedString = NSAttributedString(string: symbolString, attributes: attributes)
+                game.board[atPosition].card!.initAttributedString()
+                
+                //Sets the Face that will be displayed on the button for the Card at this position
+                cardButtons[atPosition].setAttributedTitle(game.board[atPosition].card!.attributedString, for: UIControl.State.normal)
+                
+                //Add a border to highlight the position if it is selected
+                if game.board[atPosition].isSelected {
+                    cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)
+                    cardButtons[atPosition].layer.borderWidth = 3
+                } else {
+                    cardButtons[atPosition].layer.borderColor = view.backgroundColor!.cgColor
+                    cardButtons[atPosition].layer.borderWidth = 3
                 }
-                    
-                cardButtons[atPosition].setAttributedTitle(aCard.attributedString, for: UIControl.State.normal)
                 cardButtons[atPosition].isHidden = false
             }
         }

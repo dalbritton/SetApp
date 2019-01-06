@@ -10,30 +10,28 @@ import Foundation
 import GameplayKit
 
 class CardDeck {
-    private(set) var cards = [Card]()
+    private(set) var cards: [Card]
     
-    init(cardCount: Int) {
-        //Get a random list of cardNumbers to use as we create new Cards (1...cardCount)
-        let shuffledSequence = GKShuffledDistribution(forDieWithSideCount: cardCount)
+    init(numberOfCards: Int) {
+        cards = Array(repeating: Card(), count: numberOfCards)
+        //Get a list of random sequences to use for shuffling
+        let shuffledSequence = GKShuffledDistribution(forDieWithSideCount: numberOfCards)
         for symbol in Card.Symbol.all {
             for pipCount in Card.PipCount.all {
                 for color in Card.Color.all {
                     for shading in Card.Shading.all {
-                        cards.append(Card(
-                                cardIdentifier: shuffledSequence.nextInt() - 1
-                                , symbol: symbol
-                                , pipCount: pipCount
-                                , color: color
-                                , shading: shading
-                            )
-                        )
+                        let index = shuffledSequence.nextInt() - 1
+                        cards[index].symbol = symbol
+                        cards[index].pipCount = pipCount
+                        cards[index].color = color
+                        cards[index].shading = shading
                     }
                 }
             }
         }
     }
     
-    func draw() -> Card? {
+     func draw() -> Card? {
         if cards.count > 0 {
             return cards.remove(at:cards.count.arc4random)
         } else {

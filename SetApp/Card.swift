@@ -10,15 +10,16 @@ import Foundation
 import UIKit
 
 class Card {
-    var cardIdentifier: Int?
-    var symbol: Symbol
-    var pipCount: PipCount
-    var color: Color
-    var shading: Shading
+    var symbol: Symbol?
+    var pipCount: PipCount?
+    var color: Color?
+    var shading: Shading?
     var attributedString: NSAttributedString?
     
-    init(cardIdentifier: Int?, symbol: Symbol, pipCount: PipCount, color: Color, shading: Shading) {
-        self.cardIdentifier = cardIdentifier
+    init() {
+    }
+    
+    init(symbol: Symbol, pipCount: PipCount, color: Color, shading: Shading) {
         self.symbol = symbol
         self.pipCount = pipCount
         self.color = color
@@ -66,4 +67,21 @@ class Card {
         static var all = [Shading.filled, .striped, .outlined]
     }
     
-}
+    public func initAttributedString() {
+        //We only need to init the attributedString once per Card
+        if self.attributedString == nil {
+            //TODO: do this more efficiently
+            var symbolString = ""
+            for _ in 1...self.pipCount!.rawValue {
+                symbolString += self.symbol!.rawValue
+            }
+            let attributes: [NSAttributedString.Key : Any] = [
+                .strokeColor : self.color!.uiColor(),
+                .strokeWidth : self.shading!.rawValue == "filled" ? -5 : 5,
+                .foregroundColor : self.color!.uiColor().withAlphaComponent(self.shading!.rawValue == "striped" ? 0.15 : 1.0)
+            ]
+            self.attributedString = NSAttributedString(string:  symbolString, attributes: attributes)
+        }
+    }
+    
+} //Card

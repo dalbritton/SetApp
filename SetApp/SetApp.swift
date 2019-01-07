@@ -26,24 +26,6 @@ class SetApp {
         return nil
     }
     
-    func selectedSet() -> [Int] {
-        //BoardPositions containing a Card and being in "selected" states
-        var retValues = [Int]()
-        for index in 0..<24 {
-            if board[index].card != nil && board[index].state != .unselected {
-                retValues.append(index)
-            }
-        }
-        return retValues
-    }
-    
-    var failureSet: [Int] {
-        //BoardPositions containing a Card and being in "failure" state
-        return board.indices.filter {
-            board[$0].card != nil && board[$0].state == .failure
-        }
-    }
-    
     func newGame() {
         //Create a new deck of 81 cards; shuffled into a random sequence
         cardDeck = CardDeck(numberOfCards: 81)
@@ -58,25 +40,53 @@ class SetApp {
         dealCards(numberOfCards: 12)
     }
     
+    struct GameCard {
+        //An instance of a playing Card at a particula BoardPosition
+        var card: Card
+        var boardPosition: Int
+    }
+    
+    func selectedSet() -> [GameCard] {
+        //GameCards in "selected" states (!= .unselected)
+        var retValues = [GameCard]()
+        for index in 0..<24 {
+            if board[index].card != nil && board[index].state != .unselected {
+                retValues.append(GameCard(card: board[index].card!, boardPosition: index))
+            }
+        }
+        return retValues
+    }
+    
+    func failureSet() -> [GameCard] {
+        var retValues = [GameCard]()
+        for index in 0..<24 {
+            if board[index].card != nil && board[index].state != .failure {
+                retValues.append(GameCard(card: board[index].card!, boardPosition: index))
+            }
+        }
+        return retValues
+    }
+    
     func dealCards(numberOfCards: Int) {
         //If there is a currently selected "success" set of three cards then remove them from the board
         var cardSet = selectedSet()
         if cardSet.count == 3 {
             let success = validate(for: cardSet)
             if success {
-            for index in 0..<cardSet.count {
-                board[cardSet[index]].card = nil
-            }
+                for index in 0..<cardSet.count {
+                    let aPosition = cardSet[index].boardPosition
+                    board[aPosition].card = nil
+                }
             }
         }
-
+        
         //Now deal the new cards
         for _ in 1...numberOfCards {
             if availableBoardPosition != nil && cardDeck!.cards.count != 0 {
                 let availablePosition = availableBoardPosition!
-                    if let aCard = cardDeck!.draw() {
-                        board[availablePosition].card = aCard
-                        board[availablePosition].state = .unselected
+                if let aCard = cardDeck!.draw() {
+                    board[availablePosition].card = aCard
+                    board[availablePosition].state = .unselected
                 }
             }
         }
@@ -87,11 +97,12 @@ class SetApp {
         var cardSet = selectedSet()
         if cardSet.count == 3 {
             for index in 0..<cardSet.count {
-                switch board[cardSet[index]].state {
+                let aPosition = cardSet[index].boardPosition
+                switch board[aPosition].state {
                 //Then remove if they're successful
-                case .success: board[cardSet[index]].card = nil
+                case .success: board[aPosition].card = nil
                 //Else unselect them
-                case .failure: board[cardSet[index]].state = .unselected
+                case .failure: board[aPosition].state = .unselected
                 default: break
                 }
             }
@@ -111,17 +122,18 @@ class SetApp {
         if cardSet.count == 3 {
             let success = validate(for: cardSet)
             for index in 0..<cardSet.count {
-                board[cardSet[index]].state = success ? .success : .failure
+                let aPosition = cardSet[index].boardPosition
+                board[aPosition].state = success ? .success : .failure
             }
         }
     }
     
-    func validate(for cardSet: [Int]) -> Bool {
+    func validate(for cardSet: [GameCard]) -> Bool {
         var score = 0
         if cardSet.count == 3 {
-            let card1 = board[cardSet[0]].card!
-            let card2 = board[cardSet[1]].card!
-            let card3 = board[cardSet[2]].card!
+            let card1 = cardSet[0].card
+            let card2 = cardSet[1].card
+            let card3 = cardSet[2].card
             
             //They all have the same number or have three different numbers
             let pips: Set = [ card1.pipCount!.rawValue, card2.pipCount!.rawValue ]
@@ -155,4 +167,35 @@ class SetApp {
         return score == 4
     }
     
+    func generateHints() -> [[GameCard]] {
+        var allCards = [GameCard]()
+        
+        //Build a Set of all GameCards
+        for index in 0..<board.count {
+            if board[index].card != nil {
+                allCards.append(GameCard(card: board[index].card!, boardPosition: index))
+            }
+        }
+        
+        var hints = [[GameCard]]()
+        //No chance of a hint of there are fewer than 3 cards
+        if allCards.count < 3 { return hints }
+        
+        var aSelection = [GameCard]()
+        for card1Index in 0..<allCards.count-2 {
+            for card2Index in card1Index+1..<allCards.count-1 {
+                for card3Index in card2Index+1..<allCards.count {
+                    aSelection.removeAll()
+                    aSelection.append(allCards[card1Index])
+                    aSelection.append(allCards[card2Index])
+                    aSelection.append(allCards[card3Index])
+                    if validate(for: aSelection) {
+                        hints.append(aSelection)
+                        print("\(aSelection[0].boardPosition)")
+                    }
+                }
+            }
+        }
+        return hints
+    }
 } //SetApp

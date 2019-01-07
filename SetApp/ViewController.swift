@@ -53,7 +53,22 @@ class ViewController: UIViewController {
             syncViewUsingModel()
         }
     }
-    
+
+    @IBOutlet weak var hintButton: UIButton! {
+        didSet {
+            hintButton.layer.cornerRadius = 8
+        }
+    }
+
+    @IBAction func hintButton(_ sender: UIButton) {
+        let hints = game.generateHints()
+        if hints.count > 0 {
+            for index in 0..<hints.count {
+                print("\(hints[index][0].boardPosition) \(hints[index][1].boardPosition) \(hints[index][2].boardPosition)")
+            }
+        }
+    }
+
     func syncViewUsingModel() {
         //Show the cards that need to be shown, hiding all others
         for atPosition in 0..<24 {

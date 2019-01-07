@@ -352,12 +352,24 @@
                                     <action selector="touchCard:" destination="BYZ-38-t0r" eventType="touchUpInside" id="u9C-b0-025"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pnq-Bb-nxZ">
+                                <rect key="frame" x="151" y="524" width="73" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
+                                <state key="normal" title="Hint">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="hintButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="o5A-wf-Ugg"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
                         <outlet property="dealButton" destination="SkR-qn-rCl" id="7UP-Zz-Bhn"/>
+                        <outlet property="hintButton" destination="pnq-Bb-nxZ" id="cRo-Pz-g0B"/>
                         <outlet property="newGameButton" destination="dos-a7-cy3" id="nY9-DA-2gs"/>
                         <outletCollection property="cardButtons" destination="hzc-qK-0An" collectionClass="NSMutableArray" id="Kg1-Yz-ZYn"/>
                         <outletCollection property="cardButtons" destination="0ZK-by-wAw" collectionClass="NSMutableArray" id="zZg-td-MHm"/>

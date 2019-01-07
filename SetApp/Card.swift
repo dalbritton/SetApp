@@ -44,15 +44,15 @@ class Card {
     enum Color: String {
         case red
         case green
-        case blue
+        case purple
         
-        static var all = [Color.red, .green, .blue]
+        static var all = [Color.red, .green, .purple]
         
         func uiColor() -> UIColor {
             switch self.rawValue {
             case "red": return #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1)
             case "green": return  #colorLiteral(red: 0, green: 0.9768045545, blue: 0, alpha: 1)
-            case "blue": return  #colorLiteral(red: 0.01680417731, green: 0.1983509958, blue: 1, alpha: 1)
+            case "purple": return  #colorLiteral(red: 0.5791940689, green: 0.1280144453, blue: 0.5726861358, alpha: 1)
             default: return  #colorLiteral(red: 0.9999960065, green: 1, blue: 1, alpha: 1)
             }
         }

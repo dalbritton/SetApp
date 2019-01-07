@@ -61,8 +61,17 @@ class SetApp {
     func dealCards(numberOfCards: Int) {
         for _ in 1...numberOfCards {
             if availableBoardPosition != nil && cardDeck!.cards.count != 0 {
-                let aCard = cardDeck!.draw()
-                board[availableBoardPosition!].card = aCard
+                if let aCard = cardDeck!.draw() {
+                    board[availableBoardPosition!].card = aCard
+                    board[availableBoardPosition!].state = .unselected
+/*
+                        Card(symbol: aCard.symbol!
+                        ,pipCount: aCard.pipCount!
+                        ,color: aCard.color!
+                        ,shading: aCard.shading!
+                    )
+ */
+                }
             }
         }
     }

@@ -14,7 +14,6 @@ class Card {
     var pipCount: PipCount?
     var color: Color?
     var shading: Shading?
-    var attributedString: NSAttributedString?
     
     init() {
     }
@@ -65,23 +64,6 @@ class Card {
         case outlined
         
         static var all = [Shading.filled, .striped, .outlined]
-    }
-    
-    public func initAttributedString() {
-        //We only need to init the attributedString once per Card
-        if self.attributedString == nil {
-            //TODO: do this more efficiently
-            var symbolString = ""
-            for _ in 1...self.pipCount!.rawValue {
-                symbolString += self.symbol!.rawValue
-            }
-            let attributes: [NSAttributedString.Key : Any] = [
-                .strokeColor : self.color!.uiColor(),
-                .strokeWidth : self.shading!.rawValue == "filled" ? -7 : 7,
-                .foregroundColor : self.color!.uiColor().withAlphaComponent(self.shading!.rawValue == "striped" ? 0.05 : 1.0)
-            ]
-            self.attributedString = NSAttributedString(string:  symbolString, attributes: attributes)
-        }
     }
     
 } //Card

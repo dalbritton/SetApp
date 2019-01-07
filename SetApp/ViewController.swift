@@ -46,7 +46,7 @@ class ViewController: UIViewController {
     }
     
     @IBOutlet var cardButtons: [UIButton]!
-
+    
     @IBAction func touchCard(_ sender: UIButton) {
         if let position = cardButtons.index(of: sender) {
             game.selectCard(atPosition: position)
@@ -61,10 +61,9 @@ class ViewController: UIViewController {
                 //No card to show
                 cardButtons[atPosition].isHidden = true
             } else {
-                game.board[atPosition].card!.initAttributedString()
-                
                 //Sets the Face that will be displayed on the button for the Card at this position
-                cardButtons[atPosition].setAttributedTitle(game.board[atPosition].card!.attributedString, for: UIControl.State.normal)
+                cardButtons[atPosition].setAttributedTitle(
+                    buildCardFace(for: game.board[atPosition].card!), for: UIControl.State.normal)
                 
                 //Adjust the border to highlight the position if needed
                 switch game.board[atPosition].state {
@@ -78,6 +77,21 @@ class ViewController: UIViewController {
             }
         }
     }
+}
+
+func buildCardFace(for aCard: Card) -> NSAttributedString {
+    //TODO: do this more efficiently
+    var symbolString = ""
+    for _ in 1...aCard.pipCount!.rawValue {
+        symbolString += aCard.symbol!.rawValue
+    }
+    let attributes: [NSAttributedString.Key : Any] = [
+        .strokeColor : aCard.color!.uiColor(),
+        .strokeWidth : aCard.shading!.rawValue == "filled"
+            || aCard.shading!.rawValue == "striped" ? -7 : 7,
+        .foregroundColor : aCard.color!.uiColor().withAlphaComponent(aCard.shading!.rawValue == "striped" ? 0.15 : 1.0)
+    ]
+    return NSAttributedString(string:  symbolString, attributes: attributes)
 }
 
 extension Int {

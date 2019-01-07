@@ -59,6 +59,18 @@ class SetApp {
     }
     
     func dealCards(numberOfCards: Int) {
+        //If there is a currently selected "success" set of three cards then remove them from the board
+        var cardSet = selectedSet()
+        if cardSet.count == 3 {
+            let success = validate(for: cardSet)
+            if success {
+            for index in 0..<cardSet.count {
+                board[cardSet[index]].card = nil
+            }
+            }
+        }
+
+        //Now deal the new cards
         for _ in 1...numberOfCards {
             if availableBoardPosition != nil && cardDeck!.cards.count != 0 {
                 let availablePosition = availableBoardPosition!
@@ -94,7 +106,7 @@ class SetApp {
             }
         }
         
-        //If there are now three cards then "score" them
+        //If there are now three cards "selected" then "validate" them
         cardSet = selectedSet()
         if cardSet.count == 3 {
             let success = validate(for: cardSet)

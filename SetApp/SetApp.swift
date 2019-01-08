@@ -181,21 +181,23 @@ class SetApp {
         //No chance of a hint of there are fewer than 3 cards
         if allCards.count < 3 { return hints }
         
+        var counter = 0
         var aSelection = [GameCard]()
         for card1Index in 0..<allCards.count-2 {
             for card2Index in card1Index+1..<allCards.count-1 {
                 for card3Index in card2Index+1..<allCards.count {
+                    counter += 1
                     aSelection.removeAll()
                     aSelection.append(allCards[card1Index])
                     aSelection.append(allCards[card2Index])
                     aSelection.append(allCards[card3Index])
                     if validate(for: aSelection) {
                         hints.append(aSelection)
-                        print("\(aSelection[0].boardPosition)")
                     }
                 }
             }
         }
+        print("\(counter) iterations")
         return hints
     }
 } //SetApp

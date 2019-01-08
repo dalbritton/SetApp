@@ -64,7 +64,8 @@ class ViewController: UIViewController {
         let hints = game.generateHints()
         if hints.count > 0 {
             for index in 0..<hints.count {
-                print("\(hints[index][0].boardPosition) \(hints[index][1].boardPosition) \(hints[index][2].boardPosition)")
+                let aSelection = hints[index]
+                print("\(aSelection[0].boardPosition) \(aSelection[1].boardPosition) \(aSelection[2].boardPosition)")
             }
         }
     }

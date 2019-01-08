@@ -23,7 +23,6 @@ class CardDeck {
                 for aColor in Card.Color.all {
                     for aShading in Card.Shading.all {
                         let index = shuffledSequence.nextInt() - 1
-                        print("\(index)")
                         self.cards[index].symbol = aSymbol
                         self.cards[index].pipCount = aPipCount
                         self.cards[index].color = aColor

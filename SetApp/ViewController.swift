@@ -31,6 +31,7 @@ class ViewController: UIViewController {
     
     @IBAction func dealButton(_ sender: UIButton) {
         game.dealCards(numberOfCards: 3)
+        statusLabel.text = ""
         syncViewUsingModel()
     }
     
@@ -53,23 +54,30 @@ class ViewController: UIViewController {
             syncViewUsingModel()
         }
     }
-
+    
+    @IBOutlet weak var statusLabel: UILabel!
+    
     @IBOutlet weak var hintButton: UIButton! {
         didSet {
             hintButton.layer.cornerRadius = 8
         }
     }
-
+    
     @IBAction func hintButton(_ sender: UIButton) {
         let hints = game.generateHints()
-        if hints.count > 0 {
+        if hints.count == 0 {
+            statusLabel.text = "No Sets found in the cards shown"
+        } else {
+            var hintString = ""
             for index in 0..<hints.count {
                 let aSelection = hints[index]
-                print("\(aSelection[0].boardPosition) \(aSelection[1].boardPosition) \(aSelection[2].boardPosition)")
+                hintString += "\(aSelection[0].boardPosition),\(aSelection[1].boardPosition),\(aSelection[2].boardPosition)   "
             }
+            statusLabel.text = hintString
         }
+        syncViewUsingModel()
     }
-
+    
     func syncViewUsingModel() {
         //Show the cards that need to be shown, hiding all others
         for atPosition in 0..<24 {
@@ -79,7 +87,7 @@ class ViewController: UIViewController {
             } else {
                 //Sets the Face that will be displayed on the button for the Card at this position
                 cardButtons[atPosition].setAttributedTitle(
-                    buildCardFace(for: game.board[atPosition].card!), for: UIControl.State.normal)
+                    buildCardFace(forCard: game.board[atPosition].card!), for: UIControl.State.normal)
                 
                 //Adjust the border to highlight the position if needed
                 switch game.board[atPosition].state {
@@ -95,7 +103,7 @@ class ViewController: UIViewController {
     }
 }
 
-func buildCardFace(for aCard: Card) -> NSAttributedString {
+func buildCardFace(forCard aCard: Card) -> NSAttributedString {
     //TODO: do this more efficiently
     var symbolString = ""
     for _ in 1...aCard.pipCount!.rawValue {

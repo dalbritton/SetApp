@@ -32,6 +32,7 @@ class ViewController: UIViewController {
     @IBAction func dealButton(_ sender: UIButton) {
         game.dealCards(numberOfCards: 3)
         statusLabel.text = ""
+        setHintButtonTitle("Hints")
         syncViewUsingModel()
     }
     
@@ -66,7 +67,8 @@ class ViewController: UIViewController {
     @IBAction func hintButton(_ sender: UIButton) {
         let hints = game.generateHints()
         if hints.count == 0 {
-            statusLabel.text = "No Sets found in the cards shown"
+            statusLabel.text = "No Sets among the cards shown"
+            setHintButtonTitle("Hints")
         } else {
             var hintString = ""
             for index in 0..<hints.count {
@@ -74,10 +76,15 @@ class ViewController: UIViewController {
                 hintString += "\(aSelection[0].boardPosition),\(aSelection[1].boardPosition),\(aSelection[2].boardPosition)   "
             }
             statusLabel.text = hintString
+            setHintButtonTitle("Hints (\(hints.count))")
         }
         syncViewUsingModel()
     }
     
+    func setHintButtonTitle(_ text: String) {
+        hintButton.setTitle(text, for:  UIControl.State.normal)
+    }
+
     func syncViewUsingModel() {
         //Show the cards that need to be shown, hiding all others
         for atPosition in 0..<24 {

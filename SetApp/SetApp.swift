@@ -41,7 +41,7 @@ class SetApp {
     }
     
     struct GameCard {
-        //An instance of a playing Card at a particula BoardPosition
+        //An instance of a playing Card at a particular BoardPosition
         var card: Card
         var boardPosition: Int
     }

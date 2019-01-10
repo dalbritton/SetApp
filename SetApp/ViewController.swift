@@ -95,7 +95,7 @@ class ViewController: UIViewController {
                 //Sets the Face that will be displayed on the button for the Card at this position
                 cardButtons[atPosition].setAttributedTitle(
                     buildCardFace(forCard: game.board[atPosition].card!), for: UIControl.State.normal)
-                
+                cardButtons[atPosition].titleLabel!.numberOfLines = 0
                 //Adjust the border to highlight the position if needed
                 switch game.board[atPosition].state {
                 case .unselected: cardButtons[atPosition].layer.borderColor = view.backgroundColor!.cgColor
@@ -111,10 +111,9 @@ class ViewController: UIViewController {
 }
 
 func buildCardFace(forCard aCard: Card) -> NSAttributedString {
-    //TODO: do this more efficiently
-    var symbolString = ""
+    var label = ""
     for _ in 1...aCard.pipCount!.rawValue {
-        symbolString += aCard.symbol!.rawValue
+        label += (label.count > 0 ? "\n" : "") + aCard.symbol!.rawValue
     }
     let attributes: [NSAttributedString.Key : Any] = [
         .strokeColor : aCard.color!.uiColor(),
@@ -122,7 +121,7 @@ func buildCardFace(forCard aCard: Card) -> NSAttributedString {
             || aCard.shading!.rawValue == "striped" ? -7 : 7,
         .foregroundColor : aCard.color!.uiColor().withAlphaComponent(aCard.shading!.rawValue == "striped" ? 0.15 : 1.0)
     ]
-    return NSAttributedString(string:  symbolString, attributes: attributes)
+    return NSAttributedString(string:  label, attributes: attributes)
 }
 
 extension Int {

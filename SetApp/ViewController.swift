@@ -65,18 +65,23 @@ class ViewController: UIViewController {
     }
     
     @IBAction func hintButton(_ sender: UIButton) {
-        let hints = game.generateHints()
-        if hints.count == 0 {
-            statusLabel.text = "No Sets among the cards shown"
-            setHintButtonTitle("Hints")
-        } else {
-            var hintString = ""
-            for index in 0..<hints.count {
-                let aSelection = hints[index]
-                hintString += "\(aSelection[0].boardPosition),\(aSelection[1].boardPosition),\(aSelection[2].boardPosition)   "
+        if hintButton.currentTitle == "Hint" {
+            let hints = game.generateHints()
+            if hints.count == 0 {
+                statusLabel.text = "No Sets among the cards shown"
+                setHintButtonTitle("Hints")
+            } else {
+                var hintString = ""
+                for index in 0..<hints.count {
+                    let aSelection = hints[index]
+                    hintString += "\(aSelection[0].boardPosition+1),\(aSelection[1].boardPosition+1),\(aSelection[2].boardPosition+1)   "
+                }
+                statusLabel.text = hintString
+                setHintButtonTitle("Hints (\(hints.count))")
             }
-            statusLabel.text = hintString
-            setHintButtonTitle("Hints (\(hints.count))")
+        } else {
+            setHintButtonTitle("Hint")
+            statusLabel.text = ""
         }
         syncViewUsingModel()
     }
@@ -84,7 +89,7 @@ class ViewController: UIViewController {
     func setHintButtonTitle(_ text: String) {
         hintButton.setTitle(text, for:  UIControl.State.normal)
     }
-
+    
     func syncViewUsingModel() {
         //Show the cards that need to be shown, hiding all others
         for atPosition in 0..<24 {

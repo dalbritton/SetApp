@@ -176,7 +176,6 @@ class SetApp {
                 allCards.append(GameCard(card: board[index].card!, boardPosition: index))
             }
         }
-        print("\(allCards.count) cards for hints")
         var hints = [[GameCard]]()
         //No chance of a hint of there are fewer than 3 cards
         if allCards.count < 3 { return hints }
@@ -197,7 +196,6 @@ class SetApp {
                 }
             }
         }
-        print("\(counter) iterations")
         return hints
     }
 } //SetApp

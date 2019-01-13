@@ -19,7 +19,7 @@ class ViewController: UIViewController {
             cardButtons[index].isHidden = true
             cardButtons[index].layer.cornerRadius = 8
         }
-        try! game.newGame()
+        game.newGame()
         syncViewUsingModel()
     }
     
@@ -54,18 +54,17 @@ class ViewController: UIViewController {
     
     @IBAction func hintButton(_ sender: UIButton) {
         if hintButton.currentTitle == "Hint" {
-            let hints = game.generateHints()
-            if hints.count == 0 {
-                statusLabel.text = "No Sets among the cards shown"
-                setHintButtonTitle("Hints")
-            } else {
+            if let hints = game.generateHints() {
                 var hintString = ""
-                for index in 0..<hints.count {
-                    let aSelection = hints[index]
-                    hintString += "\(aSelection[0].boardPosition+1),\(aSelection[1].boardPosition+1),\(aSelection[2].boardPosition+1)   "
+                for index in hints.indices {
+                    let selection: (card1:Int, card2: Int , card3:Int ) = hints[index]
+                    hintString += "\(selection.card1+1),\(selection.card2+1),\(selection.card3+1)   "
                 }
                 statusLabel.text = hintString
                 setHintButtonTitle("Hints (\(hints.count))")
+            } else {
+                statusLabel.text = "No Sets among the cards shown"
+                setHintButtonTitle("Hints")
             }
         } else {
             setHintButtonTitle("Hint")
@@ -104,16 +103,16 @@ class ViewController: UIViewController {
         }
     }
     
-    private func buildCardFace(forCard aCard: Card) -> NSAttributedString {
+    private func buildCardFace(forCard theCard: Card) -> NSAttributedString {
         var label = ""
-        for _ in 1...aCard.pipCount!.rawValue {
-            label += (label.count > 0 ? "\n" : "") + aCard.symbol!.rawValue
+        for _ in 1...theCard.pipCount!.rawValue {
+            label += (label.count > 0 ? "\n" : "") + theCard.symbol!.rawValue
         }
         let attributes: [NSAttributedString.Key : Any] = [
-            .strokeColor : aCard.color!.uiColor(),
-            .strokeWidth : aCard.shading!.rawValue == "filled"
-                || aCard.shading!.rawValue == "striped" ? -7 : 7,
-            .foregroundColor : aCard.color!.uiColor().withAlphaComponent(aCard.shading!.rawValue == "striped" ? 0.15 : 1.0)
+            .strokeColor : theCard.color!.uiColor(),
+            .strokeWidth : theCard.shading!.rawValue == "filled"
+                || theCard.shading!.rawValue == "striped" ? -7 : 7,
+            .foregroundColor : theCard.color!.uiColor().withAlphaComponent(theCard.shading!.rawValue == "striped" ? 0.15 : 1.0)
         ]
         return NSAttributedString(string:  label, attributes: attributes)
     }

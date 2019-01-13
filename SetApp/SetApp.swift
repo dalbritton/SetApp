@@ -13,6 +13,15 @@ struct SetApp {
     private var numberOfBoardPositions = 24
     private var numberOfCardsInDeck = 81
     private var hints = [(Int, Int, Int)]()
+    private var allPositionsHavingCards: [Int]? {
+        var positions = [Int]()
+        for index in board.indices {
+            if board[index].card != nil {
+                positions.append(index)
+            }
+        }
+        return positions.count > 0 ? positions : nil
+    }
     
     public lazy var cards = [Card]()
     
@@ -35,13 +44,16 @@ struct SetApp {
         }
         
         //Deal no more than 12 cards to start the game
-        dealCards(numberOfCards: numberOfCardsInDeck < 12 ? numberOfCardsInDeck : 12)
+        dealCards(numberOfCards: numberOfCardsInDeck < 12 ? numberOfCardsInDeck : 12, withBorder: false)
         
         hints.removeAll()
         hintButtonLabel = "Hints"
+        status = ""
     }
     
-    public mutating func dealCards(numberOfCards: Int) {
+    public mutating func dealCards(numberOfCards: Int, withBorder: Bool) {
+        clearBorders(withState: BoardPosition.State.dealt)
+        
         //If there is a selected "successful" set of three cards then remove them from the board
         if let positions = selectedPositions() {
             if positions.count == 3 {
@@ -55,23 +67,37 @@ struct SetApp {
         }
         
         //Now deal the new cards
+        var count = 0
         for _ in 1...numberOfCards {
             if let position = availableBoardPosition {
                 if cards.count > 0 {
                     let card = cards.remove(at:cards.count.arc4random)
                     board[position].card = card
-                    board[position].state = .unselected
+                    board[position].state = withBorder ? .dealt : .unselected
+                    count += 1
                 }
             }
         }
-        
-        status = ""
+        status = "\(count) new cards have been dealt"
+    }
+    
+    private mutating func clearBorders(withState: BoardPosition.State) {
+        //Clear all the borders having "withState"
+        if let positions = allPositionsHavingCards {
+            for index in positions.indices {
+                if board[positions[index]].state == withState {
+                    board[positions[index]].state = .unselected
+                }
+            }
+        }
     }
     
     public mutating func selectCard(atPosition: Int ) {
-        var successfulSet = false
+        clearBorders(withState: BoardPosition.State.dealt)
+        if hints.count == 0 { status = "" }
         
         //If there are currently three selected card positions
+        var successfulSet = false
         if let positions = selectedPositions() {
             if positions.count == 3 {
                 for index in positions.indices {
@@ -81,23 +107,27 @@ struct SetApp {
                         board[positions[index]].card = nil
                         successfulSet = true
                     //Else unselect them
-                    case .failed: board[positions[index]].state = .unselected
+                    case .failed:
+                        board[positions[index]].state = .unselected
                     default: break
                     }
                 }
                 if successfulSet {
-                    dealCards(numberOfCards: 3)
+                    dealCards(numberOfCards: 3, withBorder: true)
                     if positions.contains(atPosition) { return }
                 }
             }
         }
         
-        //If the BoardPosition contains a Card then flip its Selected state
+        //If the selected BoardPosition contains a Card then flip its Selected state
         if board[atPosition].card != nil  {
             switch board[atPosition].state {
-            case .unselected: board[atPosition].state = .selected
-            case .selected: board[atPosition].state = .unselected
-            default: board[atPosition].state = .unselected
+            case .unselected, .dealt:
+                board[atPosition].state = .selected
+            case .selected:
+                board[atPosition].state = .unselected
+            default:
+                board[atPosition].state = .unselected
             }
         }
         
@@ -110,6 +140,7 @@ struct SetApp {
                 }
             }
         }
+        
     }
     
     public mutating func generateHints() {
@@ -163,8 +194,8 @@ struct SetApp {
         //Build an array of available board positions
         var positions = [Int]()
         for index in board.indices {
-            //An empty (available) position contains no Card
-            if board[index].card == nil {
+            //An empty (available) position contains no Card or contains a .successfully matched card
+            if board[index].card == nil || board[index].state == .successful {
                 positions.append(index)
             }
         }
@@ -237,11 +268,15 @@ struct SetApp {
     }
     
     private func selectedPositions() -> [Int]? {
-        //Return an array of BoardPosition indices having "selected" states (!= .unselected)
+        //Return an array of BoardPosition indices having "selected" states
         var positions = [Int]()
         for index in board.indices {
-            if board[index].card != nil && board[index].state != .unselected {
-                positions.append(index)
+            if board[index].card != nil {
+                switch board[index].state {
+                case .selected, .failed, .dealt, .successful:
+                    positions.append(index)
+                default: break
+                }
             }
         }
         return positions.count > 0 ? positions : nil

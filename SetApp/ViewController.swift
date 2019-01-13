@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var dealButton: UIButton! { didSet { dealButton.layer.cornerRadius = 8 } }
     
     @IBAction func dealButton(_ sender: UIButton) {
-        game.dealCards(numberOfCards: 3)
+        game.dealCards(numberOfCards: 3, withBorder: true)
         syncViewUsingModel()
     }
     
@@ -67,6 +67,7 @@ class ViewController: UIViewController {
                 cardButtons[atPosition].titleLabel!.numberOfLines = 0
                 //Adjust the border to highlight the position if needed
                 switch game.board[atPosition].state {
+                case .dealt: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 0.9994240403, green: 0.9855536819, blue: 0, alpha: 1)
                 case .unselected: cardButtons[atPosition].layer.borderColor = view.backgroundColor!.cgColor
                 case .selected: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)
                 case .successful: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 0, green: 0.9768045545, blue: 0, alpha: 1)
@@ -74,6 +75,8 @@ class ViewController: UIViewController {
                 }
                 cardButtons[atPosition].layer.borderWidth = 3
                 cardButtons[atPosition].isHidden = false
+                
+                
                 dealButton.isEnabled = game.cards.count > 0 && game.availableBoardPosition != nil
                 dealButton.titleLabel?.isEnabled = game.cards.count > 0 && game.availableBoardPosition != nil
             }

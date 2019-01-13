@@ -8,7 +8,7 @@
 
 import Foundation
 
-class BoardPosition {
+struct BoardPosition {
     var card: Card?
     var state = State.unselected
 

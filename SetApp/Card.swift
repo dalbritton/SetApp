@@ -9,21 +9,11 @@
 import Foundation
 import UIKit
 
-class Card {
+struct Card {
     var symbol: Symbol?
     var pipCount: PipCount?
     var color: Color?
     var shading: Shading?
-    
-    init() {
-    }
-    
-    init(symbol: Symbol, pipCount: PipCount, color: Color, shading: Shading) {
-        self.symbol = symbol
-        self.pipCount = pipCount
-        self.color = color
-        self.shading = shading
-    }
     
     enum Symbol: String {
         case triangle = "▲"

@@ -9,9 +9,9 @@
 import Foundation
 import GameplayKit
 
-class SetApp {
+struct SetApp {
     //A deck of 81 cards; shuffled into a random sequence
-    var cardDeck: CardDeck?
+    lazy var cardDeck = CardDeck()
     
     //A board containing 24 positions upon which the game will be played
     var board = [BoardPosition]()
@@ -26,9 +26,9 @@ class SetApp {
         return nil
     }
     
-    func newGame() {
+    mutating func newGame() {
         //Create a new deck of 81 cards; shuffled into a random sequence
-        cardDeck = CardDeck(numberOfCards: 81)
+        cardDeck = CardDeck(numberOfCards: 13)
         
         //Create a board containing 24 positions upon which the game will be played
         board = [BoardPosition]()
@@ -67,7 +67,7 @@ class SetApp {
         return retValues
     }
     
-    func dealCards(numberOfCards: Int) {
+    mutating func dealCards(numberOfCards: Int) {
         //If there is a currently selected "success" set of three cards then remove them from the board
         var cardSet = selectedSet()
         if cardSet.count == 3 {
@@ -82,9 +82,9 @@ class SetApp {
         
         //Now deal the new cards
         for _ in 1...numberOfCards {
-            if availableBoardPosition != nil && cardDeck!.cards.count != 0 {
+            if availableBoardPosition != nil && cardDeck.cards.count != 0 {
                 let availablePosition = availableBoardPosition!
-                if let aCard = cardDeck!.draw() {
+                if let aCard = cardDeck.draw() {
                     board[availablePosition].card = aCard
                     board[availablePosition].state = .unselected
                 }
@@ -92,7 +92,7 @@ class SetApp {
         }
     }
     
-    func selectCard(atPosition: Int ) {
+    mutating func selectCard(atPosition: Int ) {
         //If there are currently three selected cards
         var cardSet = selectedSet()
         if cardSet.count == 3 {

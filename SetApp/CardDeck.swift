@@ -9,8 +9,11 @@
 import Foundation
 import GameplayKit
 
-class CardDeck {
+struct CardDeck {
     var cards = [Card]()
+    
+    init() {
+    }
     
     init(numberOfCards: Int) {
         for _ in 0..<numberOfCards {
@@ -33,7 +36,7 @@ class CardDeck {
         }
     }
     
-     func draw() -> Card? {
+    mutating func draw() -> Card? {
         if cards.count > 0 {
             return cards.remove(at:cards.count.arc4random)
         } else {

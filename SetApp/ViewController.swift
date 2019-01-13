@@ -27,15 +27,13 @@ class ViewController: UIViewController {
     
     @IBAction func dealButton(_ sender: UIButton) {
         game.dealCards(numberOfCards: 3)
-        statusLabel.text = ""
-        setHintButtonTitle("Hint")
         syncViewUsingModel()
     }
     
     @IBOutlet weak var newGameButton: UIButton! { didSet { newGameButton.layer.cornerRadius = 8 } }
     
     @IBAction func newGameButton(_ sender: UIButton) {
-        try! game.newGame()
+        game.newGame()
         syncViewUsingModel()
     }
     
@@ -53,30 +51,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var hintButton: UIButton! { didSet { hintButton.layer.cornerRadius = 8 } }
     
     @IBAction func hintButton(_ sender: UIButton) {
-        if hintButton.currentTitle == "Hint" {
-            if let hints = game.generateHints() {
-                var hintString = ""
-                for index in hints.indices {
-                    let selection: (card1:Int, card2: Int , card3:Int ) = hints[index]
-                    hintString += "\(selection.card1+1),\(selection.card2+1),\(selection.card3+1)   "
-                }
-                statusLabel.text = hintString
-                setHintButtonTitle("Hints (\(hints.count))")
-            } else {
-                statusLabel.text = "No Sets among the cards shown"
-                setHintButtonTitle("Hints")
-            }
-        } else {
-            setHintButtonTitle("Hint")
-            statusLabel.text = ""
-        }
+        game.generateHints()
         syncViewUsingModel()
     }
-    
-    private func setHintButtonTitle(_ text: String) {
-        hintButton.setTitle(text, for:  UIControl.State.normal)
-    }
-    
     private func syncViewUsingModel() {
         //Show the cards that need to be shown, hiding all others
         for atPosition in 0..<game.board.count {
@@ -97,10 +74,12 @@ class ViewController: UIViewController {
                 }
                 cardButtons[atPosition].layer.borderWidth = 3
                 cardButtons[atPosition].isHidden = false
-                dealButton.isEnabled = game.cards.count > 0
-                dealButton.titleLabel?.isEnabled = game.cards.count > 0
+                dealButton.isEnabled = game.cards.count > 0 && game.availableBoardPosition != nil
+                dealButton.titleLabel?.isEnabled = game.cards.count > 0 && game.availableBoardPosition != nil
             }
         }
+        statusLabel.text = game.status
+        hintButton.setTitle(game.hintButtonLabel, for:  UIControl.State.normal)
     }
     
     private func buildCardFace(forCard theCard: Card) -> NSAttributedString {

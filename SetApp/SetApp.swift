@@ -12,11 +12,15 @@ import GameplayKit
 struct SetApp {
     private var numberOfBoardPositions = 24
     private var numberOfCardsInDeck = 81
+    private var hints = [(Int, Int, Int)]()
     
-    lazy var cards = [Card]()
+    public lazy var cards = [Card]()
     
     //A board that will contain positions upon which the game will be played
-    var board = [BoardPosition]()
+    public var board = [BoardPosition]()
+    
+    public var status = ""
+    public var hintButtonLabel = ""
     
     public mutating func newGame() {
         try! validateStartingValues()
@@ -32,6 +36,9 @@ struct SetApp {
         
         //Deal no more than 12 cards to start the game
         dealCards(numberOfCards: numberOfCardsInDeck < 12 ? numberOfCardsInDeck : 12)
+        
+        hints.removeAll()
+        hintButtonLabel = "Hints"
     }
     
     public mutating func dealCards(numberOfCards: Int) {
@@ -57,20 +64,30 @@ struct SetApp {
                 }
             }
         }
+        
+        status = ""
     }
     
     public mutating func selectCard(atPosition: Int ) {
+        var successfulSet = false
+        
         //If there are currently three selected card positions
         if let positions = selectedPositions() {
             if positions.count == 3 {
                 for index in positions.indices {
                     switch board[positions[index]].state {
                     //Then remove if they're successful
-                    case .successful: board[positions[index]].card = nil
+                    case .successful:
+                        board[positions[index]].card = nil
+                        successfulSet = true
                     //Else unselect them
                     case .failed: board[positions[index]].state = .unselected
                     default: break
                     }
+                }
+                if successfulSet {
+                    dealCards(numberOfCards: 3)
+                    if positions.contains(atPosition) { return }
                 }
             }
         }
@@ -95,40 +112,54 @@ struct SetApp {
         }
     }
     
-    public func generateHints() -> [(Int, Int, Int)]? {
-        var positions = [Int]()
+    public mutating func generateHints() {
+        hints.removeAll()
         
         //Build a Set of all positions containing cards
+        var positions = [Int]()
         for index in board.indices {
             if board[index].card != nil {
                 positions.append(index)
             }
         }
-        var hints = [(Int, Int, Int)]()
         
         //No chance of a hint if there are fewer than 3 cards
-        if positions.count < 3 { return hints }
-        
-        var counter = 0
-        var selectionPositions = [Int]()
-        for card1Position in 0..<positions.count-2 {
-            for card2Position in card1Position+1..<positions.count-1 {
-                for card3Position in card2Position+1..<positions.count {
-                    counter += 1
-                    selectionPositions.removeAll()
-                    selectionPositions.append(positions[card1Position])
-                    selectionPositions.append(positions[card2Position])
-                    selectionPositions.append(positions[card3Position])
-                    if validate(for: selectionPositions) {
-                        hints.append((selectionPositions[0], selectionPositions[1], selectionPositions[2]))
+        if positions.count < 3 {
+            hints.removeAll()
+        } else {
+            var counter = 0
+            var selectionPositions = [Int]()
+            for card1Position in 0..<positions.count-2 {
+                for card2Position in card1Position+1..<positions.count-1 {
+                    for card3Position in card2Position+1..<positions.count {
+                        counter += 1
+                        selectionPositions.removeAll()
+                        selectionPositions.append(positions[card1Position])
+                        selectionPositions.append(positions[card2Position])
+                        selectionPositions.append(positions[card3Position])
+                        if validate(for: selectionPositions) {
+                            hints.append((selectionPositions[0], selectionPositions[1], selectionPositions[2]))
+                        }
                     }
                 }
             }
         }
-        return hints.count > 0 ? hints : nil
+        
+        if hints.count == 0 {
+            status = "No Sets among the cards shown"
+            hintButtonLabel = "Hints"
+        } else {
+            var hintString = ""
+            for index in hints.indices {
+                let selection: (card1:Int, card2: Int , card3:Int ) = hints[index]
+                hintString += "\(selection.card1+1),\(selection.card2+1),\(selection.card3+1)   "
+            }
+            status = hintString
+            hintButtonLabel = "Hints (\(hints.count))"
+        }
     }
     
-    private var availableBoardPosition: Int? {
+    public var availableBoardPosition: Int? {
         //Build an array of available board positions
         var positions = [Int]()
         for index in board.indices {
@@ -146,7 +177,7 @@ struct SetApp {
         }
     }
     
-    enum ApplicationError: Error, CustomStringConvertible {
+    public enum ApplicationError: Error, CustomStringConvertible {
         case rangeException(varName: String, value: Int, range: ClosedRange<Int>)
         
         var description: String {
@@ -226,7 +257,7 @@ struct SetApp {
         }
         return positions.count > 0 ? positions : nil
     }
-
+    
     private func validate(for positions: [Int]) -> Bool {
         //A cardSet containing three cards and scoring 4 is a valid Set
         var score = 0

@@ -73,7 +73,7 @@ class ViewController: UIViewController {
                 case .successful: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 0, green: 0.9768045545, blue: 0, alpha: 1)
                 case .failed: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1)
                 }
-                cardButtons[atPosition].layer.borderWidth = 3
+                cardButtons[atPosition].layer.borderWidth = 5
                 cardButtons[atPosition].isHidden = false
                 
                 

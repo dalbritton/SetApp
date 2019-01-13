@@ -13,6 +13,6 @@ struct BoardPosition {
     var state = State.unselected
 
     enum State {
-        case unselected, selected, success, failure
+        case unselected, selected, successful, failed
     }
 }

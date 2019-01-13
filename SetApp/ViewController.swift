@@ -14,20 +14,16 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        //Adjust the appearance of some controls before they are drawn
-        for index in 0..<cardButtons.count {
+        //Adjust the state of some controls before they are drawn the first time
+        for index in cardButtons.indices {
+            cardButtons[index].isHidden = true
             cardButtons[index].layer.cornerRadius = 8
         }
-        game.newGame()
+        try! game.newGame()
         syncViewUsingModel()
     }
     
-    @IBOutlet weak var dealButton: UIButton! {
-        didSet {
-            dealButton.layer.cornerRadius = 8
-        }
-    }
+    @IBOutlet weak var dealButton: UIButton! { didSet { dealButton.layer.cornerRadius = 8 } }
     
     @IBAction func dealButton(_ sender: UIButton) {
         game.dealCards(numberOfCards: 3)
@@ -36,14 +32,10 @@ class ViewController: UIViewController {
         syncViewUsingModel()
     }
     
-    @IBOutlet weak var newGameButton: UIButton! {
-        didSet {
-            newGameButton.layer.cornerRadius = 8
-        }
-    }
+    @IBOutlet weak var newGameButton: UIButton! { didSet { newGameButton.layer.cornerRadius = 8 } }
     
     @IBAction func newGameButton(_ sender: UIButton) {
-        game.newGame()
+        try! game.newGame()
         syncViewUsingModel()
     }
     
@@ -58,11 +50,7 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var statusLabel: UILabel!
     
-    @IBOutlet weak var hintButton: UIButton! {
-        didSet {
-            hintButton.layer.cornerRadius = 8
-        }
-    }
+    @IBOutlet weak var hintButton: UIButton! { didSet { hintButton.layer.cornerRadius = 8 } }
     
     @IBAction func hintButton(_ sender: UIButton) {
         if hintButton.currentTitle == "Hint" {
@@ -86,13 +74,13 @@ class ViewController: UIViewController {
         syncViewUsingModel()
     }
     
-    func setHintButtonTitle(_ text: String) {
+    private func setHintButtonTitle(_ text: String) {
         hintButton.setTitle(text, for:  UIControl.State.normal)
     }
     
-    func syncViewUsingModel() {
+    private func syncViewUsingModel() {
         //Show the cards that need to be shown, hiding all others
-        for atPosition in 0..<24 {
+        for atPosition in 0..<game.board.count {
             if game.board[atPosition].card == nil {
                 //No card to show
                 cardButtons[atPosition].isHidden = true
@@ -105,8 +93,8 @@ class ViewController: UIViewController {
                 switch game.board[atPosition].state {
                 case .unselected: cardButtons[atPosition].layer.borderColor = view.backgroundColor!.cgColor
                 case .selected: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)
-                case .success: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 0, green: 0.9768045545, blue: 0, alpha: 1)
-                case .failure: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1)
+                case .successful: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 0, green: 0.9768045545, blue: 0, alpha: 1)
+                case .failed: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1)
                 }
                 cardButtons[atPosition].layer.borderWidth = 3
                 cardButtons[atPosition].isHidden = false
@@ -115,20 +103,20 @@ class ViewController: UIViewController {
             }
         }
     }
-}
-
-func buildCardFace(forCard aCard: Card) -> NSAttributedString {
-    var label = ""
-    for _ in 1...aCard.pipCount!.rawValue {
-        label += (label.count > 0 ? "\n" : "") + aCard.symbol!.rawValue
+    
+    private func buildCardFace(forCard aCard: Card) -> NSAttributedString {
+        var label = ""
+        for _ in 1...aCard.pipCount!.rawValue {
+            label += (label.count > 0 ? "\n" : "") + aCard.symbol!.rawValue
+        }
+        let attributes: [NSAttributedString.Key : Any] = [
+            .strokeColor : aCard.color!.uiColor(),
+            .strokeWidth : aCard.shading!.rawValue == "filled"
+                || aCard.shading!.rawValue == "striped" ? -7 : 7,
+            .foregroundColor : aCard.color!.uiColor().withAlphaComponent(aCard.shading!.rawValue == "striped" ? 0.15 : 1.0)
+        ]
+        return NSAttributedString(string:  label, attributes: attributes)
     }
-    let attributes: [NSAttributedString.Key : Any] = [
-        .strokeColor : aCard.color!.uiColor(),
-        .strokeWidth : aCard.shading!.rawValue == "filled"
-            || aCard.shading!.rawValue == "striped" ? -7 : 7,
-        .foregroundColor : aCard.color!.uiColor().withAlphaComponent(aCard.shading!.rawValue == "striped" ? 0.15 : 1.0)
-    ]
-    return NSAttributedString(string:  label, attributes: attributes)
 }
 
 extension Int {

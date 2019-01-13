@@ -46,9 +46,7 @@ struct SetApp {
         //Deal no more than 12 cards to start the game
         dealCards(numberOfCards: numberOfCardsInDeck < 12 ? numberOfCardsInDeck : 12, withBorder: false)
         
-        hints.removeAll()
-        hintButtonLabel = "Hints"
-        status = ""
+        clearHints()
     }
     
     public mutating func dealCards(numberOfCards: Int, withBorder: Bool) {
@@ -78,6 +76,7 @@ struct SetApp {
                 }
             }
         }
+        clearHints()
         status = "\(count) new cards have been dealt"
     }
     
@@ -143,8 +142,17 @@ struct SetApp {
         
     }
     
-    public mutating func generateHints() {
+    private mutating func clearHints() {
         hints.removeAll()
+        hintButtonLabel = "Hints"
+        status = ""
+    }
+    
+    public mutating func generateHints() {
+        if hints.count > 0 {
+            clearHints()
+            return
+        }
         
         //Build a Set of all positions containing cards
         var positions = [Int]()

@@ -10,8 +10,7 @@ import Foundation
 import GameplayKit
 
 struct SetApp {
-    //A deck of 81 cards; shuffled into a random sequence
-    lazy var cardDeck = CardDeck()
+    lazy var cards = [Card]()
     
     //A board containing 24 positions upon which the game will be played
     var board = [BoardPosition]()
@@ -28,7 +27,7 @@ struct SetApp {
     
     mutating func newGame() {
         //Create a new deck of 81 cards; shuffled into a random sequence
-        cardDeck = CardDeck(numberOfCards: 13)
+        createCardDeck(numberOfCards: 13)
         
         //Create a board containing 24 positions upon which the game will be played
         board = [BoardPosition]()
@@ -44,6 +43,36 @@ struct SetApp {
         //An instance of a playing Card at a particular BoardPosition
         var card: Card
         var boardPosition: Int
+    }
+
+    //A deck of 81 cards; shuffled into a random sequence
+    mutating func createCardDeck(numberOfCards: Int) {
+        for _ in 0..<numberOfCards {
+            self.cards.append(Card())
+        }
+        //Get a list of random sequences to use for shuffling
+        let shuffledSequence = GKShuffledDistribution(forDieWithSideCount: numberOfCards)
+        for aSymbol in Card.Symbol.all {
+            for aPipCount in Card.PipCount.all {
+                for aColor in Card.Color.all {
+                    for aShading in Card.Shading.all {
+                        let index = shuffledSequence.nextInt() - 1
+                        self.cards[index].symbol = aSymbol
+                        self.cards[index].pipCount = aPipCount
+                        self.cards[index].color = aColor
+                        self.cards[index].shading = aShading
+                    }
+                }
+            }
+        }
+    }
+    
+    mutating func drawCardFromDeck() -> Card? {
+        if cards.count > 0 {
+            return cards.remove(at:cards.count.arc4random)
+        } else {
+            return nil
+        }
     }
     
     func selectedSet() -> [GameCard] {
@@ -82,10 +111,10 @@ struct SetApp {
         
         //Now deal the new cards
         for _ in 1...numberOfCards {
-            if availableBoardPosition != nil && cardDeck.cards.count != 0 {
+            if availableBoardPosition != nil && cards.count != 0 {
                 let availablePosition = availableBoardPosition!
-                if let aCard = cardDeck.draw() {
-                    board[availablePosition].card = aCard
+                if let card = drawCardFromDeck() {
+                    board[availablePosition].card = card
                     board[availablePosition].state = .unselected
                 }
             }

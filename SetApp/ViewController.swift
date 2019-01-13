@@ -110,8 +110,8 @@ class ViewController: UIViewController {
                 }
                 cardButtons[atPosition].layer.borderWidth = 3
                 cardButtons[atPosition].isHidden = false
-                dealButton.isEnabled = game.cardDeck.cards.count > 0
-                dealButton.titleLabel?.isEnabled = game.cardDeck.cards.count > 0
+                dealButton.isEnabled = game.cards.count > 0
+                dealButton.titleLabel?.isEnabled = game.cards.count > 0
             }
         }
     }

@@ -15,7 +15,6 @@
 		630A40DC21DBDA9100F56846 /* SetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 630A40DB21DBDA9100F56846 /* SetApp.swift */; };
 		630A40DE21DBDADA00F56846 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 630A40DD21DBDADA00F56846 /* Card.swift */; };
 		630A40E221DCDD4F00F56846 /* BoardPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 630A40E121DCDD4F00F56846 /* BoardPosition.swift */; };
-		63993DB321E0F04300021108 /* CardDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63993DB221E0F04300021108 /* CardDeck.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,7 +28,6 @@
 		630A40DB21DBDA9100F56846 /* SetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetApp.swift; sourceTree = "<group>"; };
 		630A40DD21DBDADA00F56846 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		630A40E121DCDD4F00F56846 /* BoardPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardPosition.swift; sourceTree = "<group>"; };
-		63993DB221E0F04300021108 /* CardDeck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDeck.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,14 +64,21 @@
 				630A40CB21DB19C600F56846 /* ViewController.swift */,
 				630A40DB21DBDA9100F56846 /* SetApp.swift */,
 				630A40E121DCDD4F00F56846 /* BoardPosition.swift */,
-				63993DB221E0F04300021108 /* CardDeck.swift */,
 				630A40DD21DBDADA00F56846 /* Card.swift */,
 				630A40D521DB19C600F56846 /* Info.plist */,
-				630A40C921DB19C600F56846 /* AppDelegate.swift */,
-				630A40D221DB19C600F56846 /* LaunchScreen.storyboard */,
 				630A40D021DB19C600F56846 /* Assets.xcassets */,
+				635873D621EAC6D70019C80D /* Other files */,
 			);
 			path = SetApp;
+			sourceTree = "<group>";
+		};
+		635873D621EAC6D70019C80D /* Other files */ = {
+			isa = PBXGroup;
+			children = (
+				630A40C921DB19C600F56846 /* AppDelegate.swift */,
+				630A40D221DB19C600F56846 /* LaunchScreen.storyboard */,
+			);
+			path = "Other files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -147,7 +152,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63993DB321E0F04300021108 /* CardDeck.swift in Sources */,
 				630A40CC21DB19C600F56846 /* ViewController.swift in Sources */,
 				630A40DC21DBDA9100F56846 /* SetApp.swift in Sources */,
 				630A40E221DCDD4F00F56846 /* BoardPosition.swift in Sources */,

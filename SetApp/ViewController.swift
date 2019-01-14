@@ -16,7 +16,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         //Adjust the state of some controls before they are drawn the first time
         for index in cardButtons.indices {
-            cardButtons[index].isHidden = true
+//            cardButtons[index].isHidden = true
+            cardButtons[index].backgroundColor = UIColor.black
             cardButtons[index].layer.cornerRadius = 8
         }
         game.newGame()
@@ -59,7 +60,8 @@ class ViewController: UIViewController {
         for atPosition in 0..<game.board.count {
             if game.board[atPosition].card == nil {
                 //No card to show
-                cardButtons[atPosition].isHidden = true
+//                cardButtons[atPosition].isHidden = true
+                cardButtons[atPosition].backgroundColor = UIColor.black
             } else {
                 //Sets the Face that will be displayed on the button for the Card at this position
                 cardButtons[atPosition].setAttributedTitle(
@@ -74,8 +76,8 @@ class ViewController: UIViewController {
                 case .failed: cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1)
                 }
                 cardButtons[atPosition].layer.borderWidth = 5
-                cardButtons[atPosition].isHidden = false
-                
+//                cardButtons[atPosition].isHidden = false
+                cardButtons[atPosition].backgroundColor = UIColor.white
                 
                 dealButton.isEnabled = game.cards.count > 0 && game.availableBoardPosition != nil
                 dealButton.titleLabel?.isEnabled = game.cards.count > 0 && game.availableBoardPosition != nil

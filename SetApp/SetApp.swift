@@ -224,7 +224,6 @@ struct SetApp {
             switch self {
             case .rangeException(let varName, let value, let range):
                 text += "\(varName) [\(value)] must be in the range \(range)"
-            default: break
             }
             return text
         }

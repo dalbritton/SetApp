@@ -61,7 +61,8 @@ class ViewController: UIViewController {
                 //No card to show (so hide it)
                 cardButtons[atPosition].setAttributedTitle(nil, for: UIControl.State.normal)
                 cardButtons[atPosition].backgroundColor = UIColor(cgColor: view.backgroundColor!.cgColor)
-                cardButtons[atPosition].layer.borderColor = view.backgroundColor!.cgColor
+                cardButtons[atPosition].layer.borderColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                cardButtons[atPosition].layer.borderWidth = 1
             } else {
                 //Sets the Face that will be displayed on the button for the Card at this position
                 cardButtons[atPosition].setAttributedTitle(

@@ -23,6 +23,8 @@ class ViewController: UIViewController {
         syncViewUsingModel()
     }
     
+    @IBOutlet weak var scoreLabel: UILabel!
+    
     @IBOutlet weak var dealButton: UIButton! { didSet { dealButton.layer.cornerRadius = 8 } }
     
     @IBAction func dealButton(_ sender: UIButton) {
@@ -83,6 +85,7 @@ class ViewController: UIViewController {
                 dealButton.titleLabel?.isEnabled = game.cards.count > 0 && game.availableBoardPosition != nil
             }
         }
+        scoreLabel.text = "Score: \(game.score)"
         statusLabel.text = game.status
         hintButton.setTitle(game.hintButtonLabel, for:  UIControl.State.normal)
     }

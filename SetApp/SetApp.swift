@@ -22,6 +22,9 @@ struct SetApp {
         }
         return positions.count > 0 ? positions : nil
     }
+    private var numberOfDealtCards = 0
+    
+    public var score = 0
     
     public lazy var cards = [Card]()
     
@@ -33,6 +36,8 @@ struct SetApp {
     
     public mutating func newGame() {
         try! validateStartingValues()
+        
+        score = 0
         
         //Create a new deck of cards; shuffled into a random sequence
         createCardDeck(numberOfCards: numberOfCardsInDeck)
@@ -73,6 +78,7 @@ struct SetApp {
                     board[position].card = card
                     board[position].state = withBorder ? .dealt : .unselected
                     count += 1
+                    numberOfDealtCards += 1
                 }
             }
         }
@@ -137,6 +143,10 @@ struct SetApp {
                 for index in positions.indices {
                     board[positions[index]].state = successful ? .successful : .failed
                 }
+                //100 points for each Set
+                //Reduce by 10% for each 3 cards showing above the initial 12
+                //Penalize 10 points for each "failed" group of 3 cards
+                score += successful ? 100+(-10*(numberOfDealtCards-12)/3) : -10
             }
         }
         

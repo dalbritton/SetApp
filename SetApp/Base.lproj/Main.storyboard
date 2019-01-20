@@ -385,7 +385,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Score: 0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qLY-3w-tT7" userLabel="ScoreLabel">
-                                <rect key="frame" x="155" y="20" width="65" height="20.5"/>
+                                <rect key="frame" x="155.5" y="20" width="64" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -402,7 +402,6 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="SkR-qn-rCl" secondAttribute="trailing" constant="220" id="LXk-1c-aSV"/>
                             <constraint firstItem="qLY-3w-tT7" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="Ts3-Lx-mFB"/>
                             <constraint firstItem="Bwa-2y-2Tq" firstAttribute="trailing" secondItem="dos-a7-cy3" secondAttribute="trailing" id="Y6G-rT-Llg"/>
-                            <constraint firstItem="qLY-3w-tT7" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="155" id="djE-pQ-Aik"/>
                             <constraint firstItem="6OQ-YW-e2C" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="dqq-jC-368"/>
                             <constraint firstItem="pnq-Bb-nxZ" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="e8u-De-jlt"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="pnq-Bb-nxZ" secondAttribute="trailing" constant="164" id="eQT-L0-do2"/>
@@ -417,6 +416,7 @@
                         <outlet property="dealButton" destination="SkR-qn-rCl" id="7UP-Zz-Bhn"/>
                         <outlet property="hintButton" destination="pnq-Bb-nxZ" id="cRo-Pz-g0B"/>
                         <outlet property="newGameButton" destination="dos-a7-cy3" id="nY9-DA-2gs"/>
+                        <outlet property="scoreLabel" destination="qLY-3w-tT7" id="rOS-tA-Wk4"/>
                         <outlet property="statusLabel" destination="Bwa-2y-2Tq" id="3dj-bM-iqQ"/>
                         <outletCollection property="cardButtons" destination="hzc-qK-0An" collectionClass="NSMutableArray" id="cRr-BA-eZA"/>
                         <outletCollection property="cardButtons" destination="Jhj-4z-QJz" collectionClass="NSMutableArray" id="YQX-6i-JEh"/>

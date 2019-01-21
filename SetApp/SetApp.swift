@@ -13,17 +13,13 @@ struct SetApp {
     private var numberOfBoardPositions = Constants.HowManyBoardPositions
     private var numberOfCardsInDeck = Constants.HowManyCardsInDeck
     private var hints = [(Int, Int, Int)]()
+    
     private var allPositionsHavingCards: [Int]? {
-        var positions = [Int]()
-        for index in board.indices {
-            if board[index].card != nil {
-                positions.append(index)
-            }
-        }
+        let positions = board.indices.filter {board[$0].card != nil}
         return positions.count > 0 ? positions : nil
     }
-    
-    //A penalty is imposed for clicking to show more than the initial cards (unless there is no possible Set among the currently visible cards)
+
+    //Keep track of how many "extra" sets of cards have been dealt so that a penalty can be imposed for showing more than the initial cards (we con't count the click if unless there is no possible Set among the currently visible cards)
     public var clickDealCardsCounter = 0
     
     //Keep track of whether hints are being shown so that a penalty can be imposed
@@ -191,7 +187,7 @@ struct SetApp {
         status = ""
     }
     
-    public mutating func clickHints() {
+    public mutating func clickHintButton() {
         //Clicking hints toggles their visibility
         if hints.count > 0 {
             clearHints()

@@ -53,7 +53,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var hintsButton: UIButton! { didSet { hintsButton.layer.cornerRadius = 8 } }
     
     @IBAction func hintButton(_ sender: UIButton) {
-        game.clickHints()
+        game.clickHintButton()
         syncViewUsingModel()
     }
     private func syncViewUsingModel() {

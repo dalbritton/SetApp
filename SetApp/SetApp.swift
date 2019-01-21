@@ -22,7 +22,12 @@ struct SetApp {
         }
         return positions.count > 0 ? positions : nil
     }
-    private var numberOfDealtCards = 0
+    
+    //A penalty is imposed for showing more than 12 cards (unless there is no possible Set among the currently visible cards)
+    public var clickDealCardsPenalty = 0
+    
+    //A penalty is imposed if a Set is chosen WHILE hints are visible
+    public var hintsAreVisible = false  //(no penalty for peeking as long as hints are hidden before scoring occurs)
     
     public var score = 0
     
@@ -32,7 +37,7 @@ struct SetApp {
     public var board = [BoardPosition]()
     
     public var status = ""
-    public var hintButtonLabel = ""
+    public var hintsButtonLabel = ""
     
     public mutating func newGame() {
         try! validateStartingValues()
@@ -54,9 +59,16 @@ struct SetApp {
         clearHints()
     }
     
-    public mutating func dealCards(numberOfCards: Int, withBorder: Bool) {
+    public mutating func clickDealCards() {
+        if generateHints() != 0 {
+                clickDealCardsPenalty += 1  //Impose the penalty for manually dealing cards ONLY when there are possible Sets among the Card currently shown on the playing board
+        }
+        dealCards(numberOfCards: 3, withBorder: true)
+    }
+    
+    private mutating func dealCards(numberOfCards: Int, withBorder: Bool) {
         clearBorders(withState: BoardPosition.State.dealt)
-        
+
         //If there is a selected "successful" set of three cards then remove them from the board
         if let positions = selectedPositions() {
             if positions.count == 3 {
@@ -78,7 +90,6 @@ struct SetApp {
                     board[position].card = card
                     board[position].state = withBorder ? .dealt : .unselected
                     count += 1
-                    numberOfDealtCards += 1
                 }
             }
         }
@@ -97,10 +108,10 @@ struct SetApp {
         }
     }
     
-    public mutating func selectCard(atPosition: Int ) {
+    public mutating func clickCard(atPosition: Int ) {
         clearBorders(withState: BoardPosition.State.dealt)
         if hints.count == 0 { status = "" }
-        
+
         //If there are currently three selected card positions
         var successfulSet = false
         if let positions = selectedPositions() {
@@ -143,10 +154,13 @@ struct SetApp {
                 for index in positions.indices {
                     board[positions[index]].state = successful ? .successful : .failed
                 }
-                //100 points for each Set
-                //Reduce by 10% for each 3 cards showing above the initial 12
-                //Penalize 10 points for each "failed" group of 3 cards
-                score += successful ? 100+(-10*(numberOfDealtCards-12)/3) : -10
+                
+                let thisScore = successful ? 100       //100 points for a "successful" Set
+                    - (clickDealCardsPenalty*10)    //Reduce by 10 for each time user has dealt more cards
+                    - (hintsAreVisible ? 25 : 0)    //Penalty for scoring while hints are displayed
+                    : -15                           //Penalty for a "failed" set
+                status = "\(thisScore) points recorded for this Set"
+                score += thisScore
             }
         }
         
@@ -154,16 +168,33 @@ struct SetApp {
     
     private mutating func clearHints() {
         hints.removeAll()
-        hintButtonLabel = "Hints"
+        hintsButtonLabel = "Hints"
+        hintsAreVisible = false
         status = ""
     }
     
-    public mutating func generateHints() {
+    public mutating func clickHints() {
+        //Clicking hints toggles their visibility
         if hints.count > 0 {
             clearHints()
-            return
+        } else {
+            if generateHints() == 0 {
+                status = "No Sets among the cards shown"
+                hintsButtonLabel = "Hints"
+            } else {
+                var hintString = ""
+                for index in hints.indices {
+                    let selection: (card1:Int, card2: Int , card3:Int ) = hints[index]
+                    hintString += "\(selection.card1+1),\(selection.card2+1),\(selection.card3+1)   "
+                }
+                status = hintString
+                hintsButtonLabel = "Hints (\(hints.count))"
+            }
+            hintsAreVisible = hints.count > 0
         }
-        
+    }
+    
+    public mutating func generateHints() -> Int {
         //Build a Set of all positions containing cards
         var positions = [Int]()
         for index in board.indices {
@@ -194,18 +225,7 @@ struct SetApp {
             }
         }
         
-        if hints.count == 0 {
-            status = "No Sets among the cards shown"
-            hintButtonLabel = "Hints"
-        } else {
-            var hintString = ""
-            for index in hints.indices {
-                let selection: (card1:Int, card2: Int , card3:Int ) = hints[index]
-                hintString += "\(selection.card1+1),\(selection.card2+1),\(selection.card3+1)   "
-            }
-            status = hintString
-            hintButtonLabel = "Hints (\(hints.count))"
-        }
+        return hints.count
     }
     
     public var availableBoardPosition: Int? {
@@ -311,8 +331,8 @@ struct SetApp {
     }
     
     private func validate(for positions: [Int]) -> Bool {
-        //A cardSet containing three cards and scoring 4 is a valid Set
-        var score = 0
+        //A cardSet containing three cards and rating 4 is a valid Set
+        var rating = 0
         if positions.count == 3 {
             let card1 = board[positions[0]].card!
             let card2 = board[positions[1]].card!
@@ -322,32 +342,32 @@ struct SetApp {
             let pips: Set = [ card1.pipCount, card2.pipCount ]
             if (card1.pipCount == card2.pipCount && card2.pipCount == card3.pipCount)
                 || (card1.pipCount != card2.pipCount && !pips.contains(card3.pipCount) )
-            { score += 1
+            { rating += 1
             }
             
             //They all have the same symbol or have three different symbols
             let symbols: Set = [ card1.symbol, card2.symbol ]
             if (card1.symbol == card2.symbol && card2.symbol == card3.symbol)
                 || (card1.symbol != card2.symbol && !symbols.contains(card3.symbol) )
-            { score += 1
+            { rating += 1
             }
             
             //They all have the same shading or have three different shadings
             let shadings: Set = [ card1.shading, card2.shading ]
             if (card1.shading == card2.shading && card2.shading == card3.shading)
                 || (card1.shading != card2.shading && !shadings.contains(card3.shading) )
-            { score += 1
+            { rating += 1
             }
             
             //They all have the same color or have three different colors
             let colors: Set = [ card1.color, card2.color ]
             if (card1.color == card2.color && card2.color == card3.color)
                 || (card1.color != card2.color && !colors.contains(card3.color) )
-            { score += 1
+            { rating += 1
             }
         }
         
-        return score == 4
+        return rating == 4
     }
     
 } //SetApp

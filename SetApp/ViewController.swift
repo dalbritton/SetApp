@@ -28,7 +28,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var dealButton: UIButton! { didSet { dealButton.layer.cornerRadius = 8 } }
     
     @IBAction func dealButton(_ sender: UIButton) {
-        game.dealCards(numberOfCards: 3, withBorder: true)
+        game.clickDealCards()
         syncViewUsingModel()
     }
     
@@ -43,22 +43,24 @@ class ViewController: UIViewController {
     
     @IBAction func touchCard(_ sender: UIButton) {
         if let position = cardButtons.index(of: sender) {
-            game.selectCard(atPosition: position)
+            game.clickCard(atPosition: position)
             syncViewUsingModel()
         }
     }
     
     @IBOutlet weak var statusLabel: UILabel!
     
-    @IBOutlet weak var hintButton: UIButton! { didSet { hintButton.layer.cornerRadius = 8 } }
+    @IBOutlet weak var hintsButton: UIButton! { didSet { hintsButton.layer.cornerRadius = 8 } }
     
     @IBAction func hintButton(_ sender: UIButton) {
-        game.generateHints()
+        game.clickHints()
         syncViewUsingModel()
     }
     private func syncViewUsingModel() {
         //Show the cards that need to be shown, hiding all others
         for atPosition in 0..<game.board.count {
+            //Clear the placeholder title used in NIB
+            cardButtons[atPosition].setTitle(nil, for: UIControl.State.normal)
             if game.board[atPosition].card == nil {
                 //No card to show (so hide it)
                 cardButtons[atPosition].setAttributedTitle(nil, for: UIControl.State.normal)
@@ -87,7 +89,7 @@ class ViewController: UIViewController {
         }
         scoreLabel.text = "Score: \(game.score)"
         statusLabel.text = game.status
-        hintButton.setTitle(game.hintButtonLabel, for:  UIControl.State.normal)
+        hintsButton.setTitle(game.hintsButtonLabel, for:  UIControl.State.normal)
     }
     
     private func buildCardFace(forCard theCard: Card) -> NSAttributedString {

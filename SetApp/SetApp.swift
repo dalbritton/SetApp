@@ -26,7 +26,7 @@ struct SetApp {
     //A penalty is imposed for clicking to show more than the initial cards (unless there is no possible Set among the currently visible cards)
     public var clickDealCardsCounter = 0
     
-    //A penalty is imposed if a Set is chosen WHILE hints are visible
+    //Keep track of whether hints are being shown so that a penalty can be imposed
     public var hintsAreVisible = false  //(no penalty for peeking as long as hints are hidden before scoring occurs)
     
     public var score = 0
@@ -111,7 +111,9 @@ struct SetApp {
     
     public mutating func clickCard(atPosition: Int ) {
         clearBorders(withState: BoardPosition.State.dealt)
-        if hints.count == 0 { status = "" }
+        
+        //Clear the status unless there are hints displayed
+        if !hintsAreVisible { status = "" }
         
         //If there are currently three selected card positions
         var successfulSet = false

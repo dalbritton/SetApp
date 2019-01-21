@@ -54,8 +54,8 @@ struct SetApp {
         }
         
         //Deal no more than 12 cards to start the game
-        dealCards(numberOfCards: numberOfCardsInDeck < Constants.InitialCardCount
-            ? numberOfCardsInDeck : Constants.InitialCardCount, withBorder: false)
+        dealCards(numberOfCards: numberOfCardsInDeck < Constants.InitialCardsToDeal
+            ? numberOfCardsInDeck : Constants.InitialCardsToDeal, withBorder: false)
         
         clearHints()
     }
@@ -108,6 +108,21 @@ struct SetApp {
             }
         }
     }
+
+    public func buildCardFace(atPosition: Int) -> NSAttributedString {
+        let theCard = board[atPosition].card!
+        var label = ""
+        for _ in 1...theCard.pipCount!.rawValue {
+            label += (label.count > 0 ? "\n" : "") + theCard.symbol!.rawValue
+        }
+        let attributes: [NSAttributedString.Key : Any] = [
+            .strokeColor : theCard.color!.uiColor(),
+            .strokeWidth : theCard.shading!.rawValue == "filled"
+                || theCard.shading!.rawValue == "striped" ? -7 : 7,
+            .foregroundColor : theCard.color!.uiColor().withAlphaComponent(theCard.shading!.rawValue == "striped" ? 0.15 : 1.0)
+        ]
+        return NSAttributedString(string:  label, attributes: attributes)
+    }
     
     public mutating func clickCard(atPosition: Int ) {
         clearBorders(withState: BoardPosition.State.dealt)
@@ -159,7 +174,7 @@ struct SetApp {
                 }
                 
                 let thisScore = successful ? Constants.ScoreForSuccessfulSet                    //Award points for a "successful" Set
-                    - (clickDealCardsCounter*Constants.PenaltyForDealingMoreThanInitial)        //Deduct for each time user has dealt more cards
+                    - (clickDealCardsCounter*Constants.PenaltyForDealingEachAdditional)        //Deduct for each time user has dealt more cards
                     - (hintsAreVisible ? Constants.PenaltyForScoringWhileHintsAreVisible : 0)   //Penalize for scoring while hints are displayed
                     : -Constants.PenaltyForFailedSet                                            //Penalize for a "failed" Set
                 status = "\(thisScore) points recorded for this Set"
@@ -198,10 +213,10 @@ struct SetApp {
     }
     
     public mutating func generateHints() -> Int {
-        //Build a Set of all positions containing cards
+        //Build a Set of all positions containing cards; exclude cards in "successful" Sets
         var positions = [Int]()
         for index in board.indices {
-            if board[index].card != nil {
+            if board[index].card != nil && board[index].state != .successful {
                 positions.append(index)
             }
         }
@@ -211,17 +226,17 @@ struct SetApp {
             hints.removeAll()
         } else {
             var counter = 0
-            var selectionPositions = [Int]()
+            var aCardSet = [Int]()
             for card1Position in 0..<positions.count-2 {
                 for card2Position in card1Position+1..<positions.count-1 {
                     for card3Position in card2Position+1..<positions.count {
                         counter += 1
-                        selectionPositions.removeAll()
-                        selectionPositions.append(positions[card1Position])
-                        selectionPositions.append(positions[card2Position])
-                        selectionPositions.append(positions[card3Position])
-                        if validate(for: selectionPositions) {
-                            hints.append((selectionPositions[0], selectionPositions[1], selectionPositions[2]))
+                        aCardSet.removeAll()
+                        aCardSet.append(positions[card1Position])
+                        aCardSet.append(positions[card2Position])
+                        aCardSet.append(positions[card3Position])
+                        if validate(for: aCardSet) {
+                            hints.append((aCardSet[0], aCardSet[1], aCardSet[2]))
                         }
                     }
                 }
@@ -344,29 +359,29 @@ struct SetApp {
             //They all have the same number or have three different numbers
             let pips: Set = [ card1.pipCount, card2.pipCount ]
             if (card1.pipCount == card2.pipCount && card2.pipCount == card3.pipCount)
-                || (card1.pipCount != card2.pipCount && !pips.contains(card3.pipCount) )
-            { rating += 1
+                    || (card1.pipCount != card2.pipCount && !pips.contains(card3.pipCount) ) {
+                rating += 1
             }
             
             //They all have the same symbol or have three different symbols
             let symbols: Set = [ card1.symbol, card2.symbol ]
             if (card1.symbol == card2.symbol && card2.symbol == card3.symbol)
-                || (card1.symbol != card2.symbol && !symbols.contains(card3.symbol) )
-            { rating += 1
+                    || (card1.symbol != card2.symbol && !symbols.contains(card3.symbol) ) {
+                rating += 1
             }
             
             //They all have the same shading or have three different shadings
             let shadings: Set = [ card1.shading, card2.shading ]
             if (card1.shading == card2.shading && card2.shading == card3.shading)
-                || (card1.shading != card2.shading && !shadings.contains(card3.shading) )
-            { rating += 1
+                    || (card1.shading != card2.shading && !shadings.contains(card3.shading) ) {
+                rating += 1
             }
             
             //They all have the same color or have three different colors
             let colors: Set = [ card1.color, card2.color ]
             if (card1.color == card2.color && card2.color == card3.color)
-                || (card1.color != card2.color && !colors.contains(card3.color) )
-            { rating += 1
+                    || (card1.color != card2.color && !colors.contains(card3.color) ) {
+                rating += 1
             }
         }
         
@@ -379,10 +394,10 @@ extension SetApp {
     private struct Constants {
         static let HowManyBoardPositions = 24
         static let HowManyCardsInDeck = 81
-        static let InitialCardCount = 12
+        static let InitialCardsToDeal = 12
         static let ScoreForSuccessfulSet = 100
         static let PenaltyForFailedSet = 15
-        static let PenaltyForDealingMoreThanInitial = 5
+        static let PenaltyForDealingEachAdditional = 5
         static let PenaltyForScoringWhileHintsAreVisible = 25
     }
 }

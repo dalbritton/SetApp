@@ -59,7 +59,7 @@ class ViewController: UIViewController {
     private func syncViewUsingModel() {
         //Show the cards that need to be shown, hiding all others
         for atPosition in 0..<game.board.count {
-            //Clear the placeholder title used in NIB
+            //Clear the placeholder title we used in NIB
             cardButtons[atPosition].setTitle(nil, for: UIControl.State.normal)
             if game.board[atPosition].card == nil {
                 //No card to show (so hide it)
@@ -69,8 +69,7 @@ class ViewController: UIViewController {
                 cardButtons[atPosition].layer.borderWidth = 1
             } else {
                 //Sets the Face that will be displayed on the button for the Card at this position
-                cardButtons[atPosition].setAttributedTitle(
-                    buildCardFace(forCard: game.board[atPosition].card!), for: UIControl.State.normal)
+                cardButtons[atPosition].setAttributedTitle(game.buildCardFace(atPosition: atPosition), for: UIControl.State.normal)
                 cardButtons[atPosition].titleLabel!.numberOfLines = 0
                 //Adjust the border to highlight the position if needed
                 switch game.board[atPosition].state {
@@ -90,20 +89,6 @@ class ViewController: UIViewController {
         scoreLabel.text = "Score: \(game.score)"
         statusLabel.text = game.status
         hintsButton.setTitle(game.hintsButtonLabel, for:  UIControl.State.normal)
-    }
-    
-    private func buildCardFace(forCard theCard: Card) -> NSAttributedString {
-        var label = ""
-        for _ in 1...theCard.pipCount!.rawValue {
-            label += (label.count > 0 ? "\n" : "") + theCard.symbol!.rawValue
-        }
-        let attributes: [NSAttributedString.Key : Any] = [
-            .strokeColor : theCard.color!.uiColor(),
-            .strokeWidth : theCard.shading!.rawValue == "filled"
-                || theCard.shading!.rawValue == "striped" ? -7 : 7,
-            .foregroundColor : theCard.color!.uiColor().withAlphaComponent(theCard.shading!.rawValue == "striped" ? 0.15 : 1.0)
-        ]
-        return NSAttributedString(string:  label, attributes: attributes)
     }
     
 } //ViewController

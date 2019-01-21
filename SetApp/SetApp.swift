@@ -10,8 +10,8 @@ import Foundation
 import GameplayKit
 
 struct SetApp {
-    private var numberOfBoardPositions = 24
-    private var numberOfCardsInDeck = 81
+    private var numberOfBoardPositions = Constants.HowManyBoardPositions
+    private var numberOfCardsInDeck = Constants.HowManyCardsInDeck
     private var hints = [(Int, Int, Int)]()
     private var allPositionsHavingCards: [Int]? {
         var positions = [Int]()
@@ -23,8 +23,8 @@ struct SetApp {
         return positions.count > 0 ? positions : nil
     }
     
-    //A penalty is imposed for showing more than 12 cards (unless there is no possible Set among the currently visible cards)
-    public var clickDealCardsPenalty = 0
+    //A penalty is imposed for clicking to show more than the initial cards (unless there is no possible Set among the currently visible cards)
+    public var clickDealCardsCounter = 0
     
     //A penalty is imposed if a Set is chosen WHILE hints are visible
     public var hintsAreVisible = false  //(no penalty for peeking as long as hints are hidden before scoring occurs)
@@ -54,21 +54,22 @@ struct SetApp {
         }
         
         //Deal no more than 12 cards to start the game
-        dealCards(numberOfCards: numberOfCardsInDeck < 12 ? numberOfCardsInDeck : 12, withBorder: false)
+        dealCards(numberOfCards: numberOfCardsInDeck < Constants.InitialCardCount
+            ? numberOfCardsInDeck : Constants.InitialCardCount, withBorder: false)
         
         clearHints()
     }
     
     public mutating func clickDealCards() {
         if generateHints() != 0 {
-                clickDealCardsPenalty += 1  //Impose the penalty for manually dealing cards ONLY when there are possible Sets among the Card currently shown on the playing board
+            clickDealCardsCounter += 1  //Impose the penalty for manually dealing cards ONLY when there are possible Sets among the Card currently shown on the playing board
         }
         dealCards(numberOfCards: 3, withBorder: true)
     }
     
     private mutating func dealCards(numberOfCards: Int, withBorder: Bool) {
         clearBorders(withState: BoardPosition.State.dealt)
-
+        
         //If there is a selected "successful" set of three cards then remove them from the board
         if let positions = selectedPositions() {
             if positions.count == 3 {
@@ -111,7 +112,7 @@ struct SetApp {
     public mutating func clickCard(atPosition: Int ) {
         clearBorders(withState: BoardPosition.State.dealt)
         if hints.count == 0 { status = "" }
-
+        
         //If there are currently three selected card positions
         var successfulSet = false
         if let positions = selectedPositions() {
@@ -155,10 +156,10 @@ struct SetApp {
                     board[positions[index]].state = successful ? .successful : .failed
                 }
                 
-                let thisScore = successful ? 100       //100 points for a "successful" Set
-                    - (clickDealCardsPenalty*10)    //Reduce by 10 for each time user has dealt more cards
-                    - (hintsAreVisible ? 25 : 0)    //Penalty for scoring while hints are displayed
-                    : -15                           //Penalty for a "failed" set
+                let thisScore = successful ? Constants.ScoreForSuccessfulSet                    //Award points for a "successful" Set
+                    - (clickDealCardsCounter*Constants.PenaltyForDealingMoreThanInitial)        //Deduct for each time user has dealt more cards
+                    - (hintsAreVisible ? Constants.PenaltyForScoringWhileHintsAreVisible : 0)   //Penalize for scoring while hints are displayed
+                    : -Constants.PenaltyForFailedSet                                            //Penalize for a "failed" Set
                 status = "\(thisScore) points recorded for this Set"
                 score += thisScore
             }
@@ -273,7 +274,7 @@ struct SetApp {
         }
     }
     
-    //Create a deck of 81 cards; shuffled into a random sequence
+    //Create a deck of cards; shuffled into a random sequence
     private mutating func createCardDeck(numberOfCards: Int) {
         cards.removeAll()
         for _ in 0..<numberOfCards {
@@ -371,3 +372,15 @@ struct SetApp {
     }
     
 } //SetApp
+
+extension SetApp {
+    private struct Constants {
+        static let HowManyBoardPositions = 24
+        static let HowManyCardsInDeck = 81
+        static let InitialCardCount = 12
+        static let ScoreForSuccessfulSet = 100
+        static let PenaltyForFailedSet = 15
+        static let PenaltyForDealingMoreThanInitial = 5
+        static let PenaltyForScoringWhileHintsAreVisible = 25
+    }
+}
